@@ -26,3 +26,11 @@ def test_instantiate_from_csv():
 def test_string_to_number():
     assert Item.string_to_number(item2) == 10
     assert Item.string_to_number(item3) == 10
+
+def test__repr__():
+    assert Item.__repr__(item1) == "Item('помидор', 2000.2, 10)"
+    assert Item.__repr__(item4) == "Item('test', 105.2, 5)"
+
+def test__str__():
+    assert Item.__str__(item1) == "помидор"
+    assert Item.__str__(item4) == "test"
