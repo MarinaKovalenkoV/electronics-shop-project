@@ -15,7 +15,7 @@ class Item:
         :param price: Цена за единицу товара.
         :param quantity: Количество товара в магазине.
         """
-        self.name = name
+        self.__name = name
         self.price = price
         self.quantity = quantity
         Item.all.append(self)
@@ -33,6 +33,12 @@ class Item:
 
     def __str__(self):
         return f'{self.name}'
+
+    def __add__(self, other):
+        if issubclass(other.__class__, self.__class__):
+            return self.quantity + other.quantity
+        raise Exception
+
 
     def calculate_total_price(self) -> float:
         """
@@ -61,6 +67,7 @@ class Item:
             for row in reader:
                 cls(row['name'], row['price'], row['quantity'])
             return cls
+
 
     def string_to_number(text):
         """статический метод, возвращающий число из числа-строки"""
