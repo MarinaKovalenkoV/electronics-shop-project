@@ -3,7 +3,11 @@ import os
 
 
 class InstantiateCSVError(Exception):
-    print("Файл item.csv поврежден")
+    def __init__(self, *args, **kwargs):
+        self.message = args[0] if args else 'Файл item.csv поврежден'
+
+    def __str__(self):
+        return self.message
 
 
 class Item:
@@ -73,9 +77,10 @@ class Item:
                 reader = csv.DictReader(csvfile, fieldnames=fieldnames)
                 for row in reader:
                     if row['price'] == "" or row['name'] == "" or row['quantity'] == "":
-                        cls(row['name'], row['price'], row['quantity'])
-                    else:
                         raise InstantiateCSVError
+                    else:
+                        cls(row['name'], row['price'], row['quantity'])
+
         except FileNotFoundError:
             print('Отсутствует файл item.csv')
 
