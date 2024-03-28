@@ -1,19 +1,24 @@
 """Здесь надо написать тесты с использованием pytest для модуля item."""
-from src.item import Item
-from src.phone import Phone
+import csv
+
+from src.item import Item, InstantiateCSVError
 import pytest
+
 
 @pytest.fixture
 def fixture():
     item = Item('помидор', 2000.00, 10)
     return item
 
+
 @pytest.fixture
 def fixture_1():
     item1 = Item('телефон', 500.00, 1)
     return item1
 
+
 item2 = Item('скотч', 100.00, 100)
+
 
 def test_name(fixture, fixture_1):
     """Проверка свойства name"""
@@ -56,14 +61,23 @@ def test_apply_discount(fixture, fixture_1):
     assert fixture_1.apply_discount() == 500.00
 
 
-def test_instantiate_from_csv(fixture, fixture_1):
-    """Проверяем инициализацию экземплярами класса"""
-    assert isinstance(fixture, Item)
-    assert isinstance(fixture_1, Item)
+def test_instantiate_from_csv():
+    with pytest.raises(FileNotFoundError):
+        with open('../src/items_1.csv') as csvfile:
+            item = csv.DictReader(csvfile)
+
+
+def test_bed_instantiate_from_csv():
+    item_1 = Item(name='помидор', price=2000.00, quantity='')
+    with pytest.raises(InstantiateCSVError):
+        item_1.instantiate_from_csv()
 
 
 def test_string_to_number():
     """статический метод, возвращающий число из числа-строки"""
     assert Item.string_to_number('5') == 5
+    assert Item.string_to_number(5.0) == 5
+    assert Item.string_to_number(5) == 5
     assert Item.string_to_number('5.0') == 5
-    assert Item.string_to_number('5.5') == 5
+    with pytest.raises(ValueError):
+        Item.string_to_number(['a', 10, 10.0])

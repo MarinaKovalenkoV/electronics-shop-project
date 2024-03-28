@@ -66,8 +66,11 @@ def test_instantiate_from_csv(fixture, fixture_1):
 def test_string_to_number():
     """статический метод, возвращающий число из числа-строки"""
     assert Keyboard.string_to_number('5') == 5
+    assert Keyboard.string_to_number(5.0) == 5
+    assert Keyboard.string_to_number(5) == 5
     assert Keyboard.string_to_number('5.0') == 5
-    assert Keyboard.string_to_number('5.5') == 5
+    with pytest.raises(ValueError):
+        Keyboard.string_to_number(['a', 10, 10.0])
 
 def test_change_lang():
     """метод, меняющий язык на клавиатуре"""

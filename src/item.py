@@ -3,11 +3,7 @@ import os
 
 
 class InstantiateCSVError(Exception):
-    def __init__(self, *args, **kwargs):
-        self.message = args[0] if args else 'Файл item.csv поврежден'
-
-    def __str__(self):
-        return self.message
+    pass
 
 
 class Item:
@@ -48,7 +44,6 @@ class Item:
             return self.quantity + other.quantity
         raise Exception
 
-
     def calculate_total_price(self) -> float:
         """
         Рассчитывает общую стоимость конкретного товара в магазине.
@@ -57,7 +52,6 @@ class Item:
         total_price_product = self.price * self.quantity * Item.pay_rate
         return total_price_product
 
-
     def apply_discount(self):
         """
         Применяет установленную скидку для конкретного товара.
@@ -65,32 +59,37 @@ class Item:
         self.price = self.price * Item.pay_rate
         return self.price
 
-
     @classmethod
     def instantiate_from_csv(cls):
         """класс - метод, инициализирующий экземпляры класса `Item` данными из файла
         _src / items.csv_"""
-        docs = os.path.abspath('../src/items.csv')
-        try:
+        docs = os.path.abspath('../src/items.csv')  # путь до файла в переменной
+        if not os.path.isfile(docs):  # проверяем наличие файла
+            raise FileNotFoundError('Отсутствует файл item.csv')  # если нет файла, выбрасываем ошибку
+        else:  # если файл есть, следующий код реализуем
             with open(docs, 'r') as csvfile:
                 fieldnames = ['name', 'price', 'quantity']
                 reader = csv.DictReader(csvfile, fieldnames=fieldnames)
                 for row in reader:
-                    if row['price'] == "" or row['name'] == "" or row['quantity'] == "":
-                        raise InstantiateCSVError
+                    if row['quantity'] == '' or row['name'] == '' or row['price'] == '':
+                        raise InstantiateCSVError('Файл item.csv поврежден')  # если файл повережден, не хватает данных
                     else:
                         cls(row['name'], row['price'], row['quantity'])
 
-        except FileNotFoundError:
-            print('Отсутствует файл item.csv')
 
 
 
-    def string_to_number(text):
+
+
+
+    @staticmethod
+    def string_to_number(text: str) -> int:
         """статический метод, возвращающий число из числа-строки"""
-        if text.isdigit():
+        if isinstance(text, str):
+            return int(round(float(text), 0))
+        elif isinstance(text, float):
             return int(text)
-        elif float(text):
-            text_int = int(float(text))
-            return text_int
-
+        elif isinstance(text, int):
+            return text
+        else:
+            raise ValueError('Невалидное значение')
